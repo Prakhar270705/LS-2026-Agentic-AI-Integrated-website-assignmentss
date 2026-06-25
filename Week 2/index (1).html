@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Task Manager</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="app">
+    <header class="app-header">
+      <div class="header-inner">
+        <span class="logo-mark">✦</span>
+        <h1>Task Manager</h1>
+        <p class="subtitle">Stay organised. Get things done.</p>
+      </div>
+    </header>
+
+    <main class="main-content">
+
+      <!-- Input Section -->
+      <section class="input-section">
+        <div class="input-card">
+          <div class="input-row">
+            <input
+              type="text"
+              id="taskInput"
+              class="task-input"
+              placeholder="What needs to be done?"
+              maxlength="120"
+              autocomplete="off"
+            />
+            <button id="addBtn" class="btn btn-add" onclick="addTask()">
+              <span class="btn-icon">+</span> Add Task
+            </button>
+          </div>
+          <div id="notification" class="notification hidden"></div>
+        </div>
+      </section>
+
+      <!-- Filter & Stats -->
+      <section class="controls-section">
+        <div class="stats">
+          <span id="totalCount" class="stat">0 tasks</span>
+          <span class="stat-divider">·</span>
+          <span id="doneCount" class="stat stat-done">0 done</span>
+          <span class="stat-divider">·</span>
+          <span id="pendingCount" class="stat stat-pending">0 pending</span>
+        </div>
+        <div class="filters">
+          <button class="filter-btn active" data-filter="all" onclick="filterTasks(this)">All</button>
+          <button class="filter-btn" data-filter="pending" onclick="filterTasks(this)">Pending</button>
+          <button class="filter-btn" data-filter="completed" onclick="filterTasks(this)">Completed</button>
+        </div>
+      </section>
+
+      <!-- Task List -->
+      <section class="task-section">
+        <ul id="taskList" class="task-list"></ul>
+        <div id="emptyState" class="empty-state">
+          <div class="empty-icon">📋</div>
+          <p>No tasks yet. Add one above to get started.</p>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Edit Modal -->
+  <div id="editModal" class="modal-overlay hidden">
+    <div class="modal">
+      <h2 class="modal-title">Edit Task</h2>
+      <input type="text" id="editInput" class="task-input" maxlength="120" />
+      <div class="modal-actions">
+        <button class="btn btn-cancel" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-save" onclick="saveEdit()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

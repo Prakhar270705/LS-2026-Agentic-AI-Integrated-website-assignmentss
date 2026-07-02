@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Smart Task Planner</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="container">
+    <h1>Smart Task Planner</h1>
+    <p>Enter a goal and get a step by step task list</p>
+
+    <div class="input-box">
+      <input type="text" id="goalInput" placeholder="e.g. Plan a trip to Goa">
+      <button id="generateBtn">Generate Plan</button>
+    </div>
+
+    <div id="status"></div>
+    <div id="taskList"></div>
+  </div>
+
+  <script>
+    const goalInput = document.getElementById("goalInput");
+    const generateBtn = document.getElementById("generateBtn");
+    const statusDiv = document.getElementById("status");
+    const taskList = document.getElementById("taskList");
+
+    generateBtn.addEventListener("click", async () => {
+      const goal = goalInput.value.trim();
+
+      if (goal === "") {
+        statusDiv.textContent = "Please enter a goal first";
+        return;
+      }
+
+      taskList.innerHTML = "";
+      statusDiv.textContent = "Generating your plan...";
+
+      try {
+        const res = await fetch("/plan", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ goal })
+        });
+
+        if (!res.ok) {
+          throw new Error("Request failed");
+        }
+
+        const data = await res.json();
+        statusDiv.textContent = "";
+
+        data.tasks.forEach((task, index) => {
+          const card = document.createElement("div");
+          card.className = "task-card";
+          card.innerHTML = `
+            <h3>Step ${index + 1}: ${task.task_name}</h3>
+            <p>Priority: ${task.priority}</p>
+            <p>Estimated Time: ${task.estimated_time}</p>
+          `;
+          taskList.appendChild(card);
+        });
+      } catch (err) {
+        statusDiv.textContent = "Something went wrong while fetching the plan";
+      }
+    });
+  </script>
+
+</body>
+</html>

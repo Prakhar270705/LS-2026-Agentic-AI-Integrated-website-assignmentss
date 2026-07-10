@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard - Finance Tracker</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav>
+    <span class="brand">Finance Tracker</span>
+    <a href="index.html">Home</a>
+    <a href="dashboard.html" class="active">Dashboard</a>
+    <a href="add-transaction.html">Add Transaction</a>
+    <a href="history.html">History</a>
+    <a href="reports.html">Reports</a>
+    <a href="assistant.html">AI Assistant</a>
+    <a href="settings.html">Settings</a>
+  </nav>
+
+  <div class="container">
+    <h1>Dashboard</h1>
+
+    <div class="summary-grid">
+      <div class="card">
+        <h2>Balance</h2>
+        <div class="value balance" id="balanceValue">₹0</div>
+      </div>
+      <div class="card">
+        <h2>Total Income</h2>
+        <div class="value income" id="incomeValue">₹0</div>
+      </div>
+      <div class="card">
+        <h2>Total Expenses</h2>
+        <div class="value expense" id="expenseValue">₹0</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Recent Transactions</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th>Category</th>
+            <th>Date</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody id="recentBody"></tbody>
+      </table>
+      <p class="hint" id="emptyHint" style="display:none;">No transactions yet. Add one to get started.</p>
+    </div>
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script>
+    if (getSettings().darkMode) document.body.classList.add("dark");
+
+    const currency = getSettings().currency || "₹";
+
+    document.getElementById("balanceValue").textContent = currency + getBalance();
+    document.getElementById("incomeValue").textContent = currency + getTotalIncome();
+    document.getElementById("expenseValue").textContent = currency + getTotalExpenses();
+
+    const recent = getTransactions().slice(-5).reverse();
+    const recentBody = document.getElementById("recentBody");
+
+    if (recent.length === 0) {
+      document.getElementById("emptyHint").style.display = "block";
+    }
+
+    recent.forEach((t) => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${t.description}</td>
+        <td>${t.category}</td>
+        <td>${t.date}</td>
+        <td class="${t.type === "income" ? "income" : "expense"}">${t.type === "income" ? "+" : "-"}${currency}${t.amount}</td>
+      `;
+      recentBody.appendChild(row);
+    });
+  </script>
+</body>
+</html>

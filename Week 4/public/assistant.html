@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Assistant - Finance Tracker</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav>
+    <span class="brand">Finance Tracker</span>
+    <a href="index.html">Home</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="add-transaction.html">Add Transaction</a>
+    <a href="history.html">History</a>
+    <a href="reports.html">Reports</a>
+    <a href="assistant.html" class="active">AI Assistant</a>
+    <a href="settings.html">Settings</a>
+  </nav>
+
+  <div class="container">
+    <h1>AI Assistant</h1>
+
+    <div class="card">
+      <div class="chat-box" id="chatBox"></div>
+      <div class="chat-input-row">
+        <input type="text" id="chatInput" placeholder="Ask something about your finances...">
+        <button class="btn" id="sendBtn">Send</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/ai.js"></script>
+  <script>
+    if (getSettings().darkMode) document.body.classList.add("dark");
+
+    const chatBox = document.getElementById("chatBox");
+    const chatInput = document.getElementById("chatInput");
+    const sendBtn = document.getElementById("sendBtn");
+
+    function addMessage(text, sender) {
+      const msg = document.createElement("div");
+      msg.className = "chat-msg " + (sender === "user" ? "chat-user" : "chat-ai");
+      msg.textContent = text;
+      chatBox.appendChild(msg);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    async function sendMessage() {
+      const question = chatInput.value.trim();
+      if (!question) return;
+
+      addMessage(question, "user");
+      chatInput.value = "";
+      sendBtn.disabled = true;
+
+      const balance = getBalance();
+      const totals = getCategoryTotals();
+
+      const reply = await askAI(
+        `My current balance is ₹${balance}. My spending by category is: ${JSON.stringify(totals)}. Question: ${question}`
+      );
+
+      addMessage(reply, "ai");
+      sendBtn.disabled = false;
+    }
+
+    sendBtn.addEventListener("click", sendMessage);
+    chatInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") sendMessage();
+    });
+
+    addMessage("Hi! Ask me anything about your spending or how to save money.", "ai");
+  </script>
+</body>
+</html>

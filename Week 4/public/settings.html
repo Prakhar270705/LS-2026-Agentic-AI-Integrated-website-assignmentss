@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Settings - Finance Tracker</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav>
+    <span class="brand">Finance Tracker</span>
+    <a href="index.html">Home</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="add-transaction.html">Add Transaction</a>
+    <a href="history.html">History</a>
+    <a href="reports.html">Reports</a>
+    <a href="assistant.html">AI Assistant</a>
+    <a href="settings.html" class="active">Settings</a>
+  </nav>
+
+  <div class="container">
+    <h1>Settings</h1>
+
+    <div class="card">
+      <label for="budget">Monthly Budget Goal</label>
+      <input type="number" id="budget" min="0" step="0.01">
+
+      <label for="currency">Currency Symbol</label>
+      <select id="currency">
+        <option value="₹">₹ (INR)</option>
+        <option value="$">$ (USD)</option>
+        <option value="€">€ (EUR)</option>
+      </select>
+
+      <div class="toggle-row">
+        <input type="checkbox" id="darkMode">
+        <label for="darkMode" style="margin: 0;">Dark Mode</label>
+      </div>
+
+      <div style="margin-top: 20px;">
+        <button class="btn" id="saveBtn">Save Settings</button>
+      </div>
+      <p class="hint" id="savedMsg" style="display:none; color:#1a9e5c;">Settings saved.</p>
+    </div>
+
+    <div class="card">
+      <h2>Danger Zone</h2>
+      <p class="hint" style="margin-bottom: 12px;">This will permanently delete all your transactions.</p>
+      <button class="btn btn-danger" id="resetBtn">Reset All Data</button>
+    </div>
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script>
+    const settings = getSettings();
+    document.getElementById("budget").value = settings.budget;
+    document.getElementById("currency").value = settings.currency;
+    document.getElementById("darkMode").checked = settings.darkMode;
+
+    if (settings.darkMode) document.body.classList.add("dark");
+
+    document.getElementById("saveBtn").addEventListener("click", () => {
+      const darkMode = document.getElementById("darkMode").checked;
+
+      saveSettings({
+        budget: parseFloat(document.getElementById("budget").value) || 0,
+        currency: document.getElementById("currency").value,
+        darkMode: darkMode,
+      });
+
+      document.body.classList.toggle("dark", darkMode);
+
+      document.getElementById("savedMsg").style.display = "block";
+      setTimeout(() => {
+        document.getElementById("savedMsg").style.display = "none";
+      }, 2000);
+    });
+
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      if (confirm("Are you sure? This cannot be undone.")) {
+        clearTransactions();
+        alert("All transactions deleted.");
+      }
+    });
+  </script>
+</body>
+</html>

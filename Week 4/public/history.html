@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>History - Finance Tracker</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav>
+    <span class="brand">Finance Tracker</span>
+    <a href="index.html">Home</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="add-transaction.html">Add Transaction</a>
+    <a href="history.html" class="active">History</a>
+    <a href="reports.html">Reports</a>
+    <a href="assistant.html">AI Assistant</a>
+    <a href="settings.html">Settings</a>
+  </nav>
+
+  <div class="container">
+    <h1>Transaction History</h1>
+
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th>Category</th>
+            <th>Type</th>
+            <th>Date</th>
+            <th>Amount</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="historyBody"></tbody>
+      </table>
+      <p class="hint" id="emptyHint" style="display:none;">No transactions yet.</p>
+    </div>
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script>
+    if (getSettings().darkMode) document.body.classList.add("dark");
+
+    const currency = getSettings().currency || "₹";
+
+    function renderHistory() {
+      const historyBody = document.getElementById("historyBody");
+      historyBody.innerHTML = "";
+
+      const transactions = getTransactions().slice().reverse();
+
+      if (transactions.length === 0) {
+        document.getElementById("emptyHint").style.display = "block";
+        return;
+      }
+      document.getElementById("emptyHint").style.display = "none";
+
+      transactions.forEach((t) => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${t.description}</td>
+          <td>${t.category}</td>
+          <td>${t.type}</td>
+          <td>${t.date}</td>
+          <td class="${t.type === "income" ? "income" : "expense"}">${t.type === "income" ? "+" : "-"}${currency}${t.amount}</td>
+          <td><button class="btn btn-danger" onclick="removeTransaction(${t.id})">Delete</button></td>
+        `;
+        historyBody.appendChild(row);
+      });
+    }
+
+    function removeTransaction(id) {
+      deleteTransaction(id);
+      renderHistory();
+    }
+
+    renderHistory();
+  </script>
+</body>
+</html>

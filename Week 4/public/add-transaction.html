@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Add Transaction - Finance Tracker</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav>
+    <span class="brand">Finance Tracker</span>
+    <a href="index.html">Home</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="add-transaction.html" class="active">Add Transaction</a>
+    <a href="history.html">History</a>
+    <a href="reports.html">Reports</a>
+    <a href="assistant.html">AI Assistant</a>
+    <a href="settings.html">Settings</a>
+  </nav>
+
+  <div class="container">
+    <h1>Add Transaction</h1>
+
+    <div class="card">
+      <form id="transactionForm">
+        <label for="description">Description</label>
+        <input type="text" id="description" required placeholder="e.g. Lunch, Salary">
+
+        <label for="amount">Amount</label>
+        <input type="number" id="amount" required min="0" step="0.01">
+
+        <label for="type">Type</label>
+        <select id="type">
+          <option value="expense">Expense</option>
+          <option value="income">Income</option>
+        </select>
+
+        <label for="category">Category</label>
+        <select id="category">
+          <option>Food</option>
+          <option>Rent</option>
+          <option>Transport</option>
+          <option>Shopping</option>
+          <option>Bills</option>
+          <option>Salary</option>
+          <option>Other</option>
+        </select>
+
+        <label for="date">Date</label>
+        <input type="date" id="date" required>
+
+        <div style="margin-top: 20px;">
+          <button type="submit" class="btn">Add Transaction</button>
+        </div>
+      </form>
+      <p class="hint" id="successMsg" style="display:none; color: #1a9e5c;">Transaction added.</p>
+    </div>
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script>
+    if (getSettings().darkMode) document.body.classList.add("dark");
+
+    document.getElementById("date").valueAsDate = new Date();
+
+    document.getElementById("transactionForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      addTransaction({
+        description: document.getElementById("description").value,
+        amount: parseFloat(document.getElementById("amount").value),
+        type: document.getElementById("type").value,
+        category: document.getElementById("category").value,
+        date: document.getElementById("date").value,
+      });
+
+      document.getElementById("transactionForm").reset();
+      document.getElementById("date").valueAsDate = new Date();
+      document.getElementById("successMsg").style.display = "block";
+      setTimeout(() => {
+        document.getElementById("successMsg").style.display = "none";
+      }, 2000);
+    });
+  </script>
+</body>
+</html>

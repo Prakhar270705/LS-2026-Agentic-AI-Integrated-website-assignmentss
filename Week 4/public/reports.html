@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Reports - Finance Tracker</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <nav>
+    <span class="brand">Finance Tracker</span>
+    <a href="index.html">Home</a>
+    <a href="dashboard.html">Dashboard</a>
+    <a href="add-transaction.html">Add Transaction</a>
+    <a href="history.html">History</a>
+    <a href="reports.html" class="active">Reports</a>
+    <a href="assistant.html">AI Assistant</a>
+    <a href="settings.html">Settings</a>
+  </nav>
+
+  <div class="container">
+    <h1>Reports</h1>
+
+    <div class="card">
+      <h2>Spending by Category</h2>
+      <canvas id="categoryChart"></canvas>
+      <p class="hint" id="noDataHint" style="display:none;">Add some expenses to see your chart here.</p>
+    </div>
+
+    <div class="card">
+      <h2>AI Spending Insights</h2>
+      <button class="btn" id="insightsBtn">Get AI Insights</button>
+      <p id="insightsText" style="margin-top: 14px; white-space: pre-line;"></p>
+    </div>
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/ai.js"></script>
+  <script>
+    if (getSettings().darkMode) document.body.classList.add("dark");
+
+    const totals = getCategoryTotals();
+
+    if (Object.keys(totals).length === 0) {
+      document.getElementById("noDataHint").style.display = "block";
+    } else {
+      new Chart(document.getElementById("categoryChart"), {
+        type: "pie",
+        data: {
+          labels: Object.keys(totals),
+          datasets: [{
+            data: Object.values(totals),
+            backgroundColor: ["#2a6e48", "#e06060", "#f0a500", "#4c9af0", "#a040b8", "#5c6472", "#1a9e5c"]
+          }]
+        }
+      });
+    }
+
+    document.getElementById("insightsBtn").addEventListener("click", async () => {
+      const btn = document.getElementById("insightsBtn");
+      const output = document.getElementById("insightsText");
+
+      btn.disabled = true;
+      output.textContent = "Thinking...";
+
+      const balance = getBalance();
+      const catTotals = getCategoryTotals();
+
+      const reply = await askAI(
+        `My balance is ₹${balance}. My spending by category is: ${JSON.stringify(catTotals)}. Give me 3 short tips to help me save more money.`
+      );
+
+      output.textContent = reply;
+      btn.disabled = false;
+    });
+  </script>
+</body>
+</html>
